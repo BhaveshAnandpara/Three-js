@@ -48,13 +48,8 @@ const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 controls.autoRotate = true
 
-/**
- * renderloop - renders frames             
- *              window.requestAnimationFrame() runs for every frame based on screen
- *              So if screen has 60 fps it will run 60 times a sec.
- *              
- *              - we are passing renderloop as function which will execute every frame and render scene and camera  
- */
+
+// renderloop
 const renderloop= ()=>{
 
     controls.update() //necessary for enableDamping & autoRotate
