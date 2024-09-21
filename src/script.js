@@ -14,7 +14,27 @@ const cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial)
 scene.add(cubeMesh)
 
 // intialize a camera
-const camera = new THREE.PerspectiveCamera(75,aspRatio, 0.1, 30)
+/**
+ * fov (FIELD OF VIEW) - first parameter of perspective camera
+ *                       what it means that how how much the camera can capture the view
+ *                       bigger fov - camera captures more scene (view)
+ *                       smaller fov - camera captures less scene (view)
+ *                       it may look like we are zooming but it's diff. checkout below visualizor
+ *                       https://observablehq.com/@grantcuster/understanding-scale-and-the-three-js-perspective-camera
+ * 
+ * aspect ratio - aspect-ratio of the camera
+ * 
+ * near - The near property defines by how close to the camera Three.js should render the scene.
+ * 
+ * far - The far property defines by how far to the camera Three.js should render the scene.
+ *       e.g : so If your camera z position is 5 which means dist betn camera & obj is 5 unit
+ *             and you have far = 4, it won't render the object.
+ *       My view : If your scene is restricted like your objects are really moving far from camera keep far same as camera z position.
+ *                 casuse if your objects are at max 5 units and you are rendering as far as 100 unit it will be unecessary calculations.
+ */
+
+
+const camera = new THREE.PerspectiveCamera(75,aspRatio, 0.1, 5)
 camera.position.z = 5
 
 // intialize a renederer
