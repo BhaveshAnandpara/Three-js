@@ -15,6 +15,10 @@ const cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial)
 scene.add(cubeMesh)
 
 // intialize a camera
+
+
+// ============================================================ Perspective Camera ============================================================
+
 /**
  * fov (FIELD OF VIEW) - first parameter of perspective camera
  *                       what it means that how how much the camera can capture the view
@@ -35,8 +39,37 @@ scene.add(cubeMesh)
  */
 
 
-const camera = new THREE.PerspectiveCamera(75,aspRatio, 0.1, 5)
+const perCamera = new THREE.PerspectiveCamera(50,aspRatio, 0.1, 30)
+  
+
+// ============================================================ Orthographic Camera ============================================================
+
+// diff btn perspective & orthographic camera = https://stackoverflow.com/questions/36573283/from-perspective-picture-to-orthographic-picture
+
+/**
+ *  for Orthographic camera, perspective is in rectangle so we need to specify 4 corners
+ *  left - units left from camera should be covered 
+ *  right - units right from camera should be covered 
+ *  top - units top from camera should be covered 
+ *  bottom - units bottom from camera should be covered
+ *  near
+ *  far 
+ */
+const orthCamera = new THREE.OrthographicCamera( -aspRatio, aspRatio, 1 , -1, 0.1, 200 )
+
+
+
+// variables 
+const camera = perCamera
 camera.position.z = 5
+
+/**
+ * Camerqa Helper to visualize camera lines
+ */
+
+const helper = new THREE.CameraHelper( camera );
+scene.add( helper );
+
 
 // intialize a renederer
 const canvas = document.querySelector('canvas.threejs')
@@ -48,12 +81,10 @@ const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 controls.autoRotate = true
 
-
 // renderloop
 const renderloop= ()=>{
 
     controls.update() //necessary for enableDamping & autoRotate
-
     renderer.render(scene, camera)
     window.requestAnimationFrame(renderloop)
 }
