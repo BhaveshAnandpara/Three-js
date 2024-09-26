@@ -8,7 +8,7 @@ const aspRatio = window.innerWidth/window.innerHeight
 const scene = new THREE.Scene();
 
 // create a mesh(object)
-const cubeGeometry = new THREE.BoxGeometry(1,1,1);
+const cubeGeometry = new THREE.BoxGeometry(1,2,1);
 const cubeMaterial = new THREE.MeshBasicMaterial({color:"red"})
 
 const cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial)
@@ -44,7 +44,9 @@ const perCamera = new THREE.PerspectiveCamera(50,aspRatio, 0.1, 30)
 
 // ============================================================ Orthographic Camera ============================================================
 
+// In Orthographic Perspective, objects appear the same size regardless of their distance from the camera. This camera type is often used for 2D games or architectural visualizations.
 // diff btn perspective & orthographic camera = https://stackoverflow.com/questions/36573283/from-perspective-picture-to-orthographic-picture
+
 
 /**
  *  for Orthographic camera, perspective is in rectangle so we need to specify 4 corners
@@ -58,13 +60,13 @@ const perCamera = new THREE.PerspectiveCamera(50,aspRatio, 0.1, 30)
 const orthCamera = new THREE.OrthographicCamera( -aspRatio, aspRatio, 1 , -1, 0.1, 200 )
 
 
-
 // variables 
 const camera = perCamera
-camera.position.z = 5
+camera.position.z = 10
+camera.lookAt(0,0,0);
 
 /**
- * Camerqa Helper to visualize camera lines
+ * Camera Helper to visualize camera lines
  */
 
 const helper = new THREE.CameraHelper( camera );
