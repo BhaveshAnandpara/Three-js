@@ -20,7 +20,7 @@ camera.position.z = 5
 
 // intialize a renederer
 const canvas = document.querySelector('canvas.threejs')
-const renderer = new THREE.WebGLRenderer({canvas})
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true}) // antialias help to reduce staircase effect
 renderer.setSize(window.innerWidth, window.innerHeight )
 
 // create controls
