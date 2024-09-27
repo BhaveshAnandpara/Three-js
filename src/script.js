@@ -7,12 +7,51 @@ const aspRatio = window.innerWidth/window.innerHeight
 // intialize a scene
 const scene = new THREE.Scene();
 
-// create a mesh(object)
-const cubeGeometry = new THREE.BoxGeometry(1,1,1);
-const cubeMaterial = new THREE.MeshBasicMaterial({color:"red"})
+// ================================== Geometry ==================================
 
-const cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial)
-scene.add(cubeMesh)
+/** 
+ * *Buffer Geometry
+ * 
+ *  1. Create Vertices Array => (0,0) origin , (3,0) , (0,3) on X-Y plane
+ *  2. Now convert this into BufferAttribute
+ *  3. create new BufferGeometry and assign this attr as position
+ *     we can also set colors, rotation, etc.
+ */
+
+const vertices = new Float32Array([
+    0,0,0,
+    3,0,0,
+    0,3,0
+])
+
+const bufferAttr = new THREE.BufferAttribute(vertices, 3); // use group of 3 as 1 vertex coordinates
+const bufferGeo = new THREE.BufferGeometry()
+bufferGeo.setAttribute('position', bufferAttr)
+
+/** 
+ * *Primitives Geometry
+ */
+
+
+//  more segments means more triangles 
+//  - makes geometry smoother but is takes lot of processing power
+ 
+
+// const geometry = new THREE.BoxGeometry(1,1,1 , 2, 2, 2); 
+// const geometry = new THREE.CapsuleGeometry( 1, 1, 4, 8 );
+// const geometry = new THREE.CircleGeometry( 5, 32 );
+// const geometry = new THREE.ConeGeometry( 1, 2, 8 );
+// const geometry = new THREE.DodecahedronGeometry( 1, 0); 
+// const geometry = new THREE.PlaneGeometry( 1, 1 );
+// const geometry = new THREE.RingGeometry( 3, 5, 12 ); 
+// const geometry = new THREE.SphereGeometry( 1, 32, 16 ); 
+// const geometry = new THREE.TorusGeometry( 2, 1, 24, 100 ); 
+const geometry = new THREE.TorusKnotGeometry( 1, 0.4, 64, 8 ); 
+
+const material = new THREE.MeshBasicMaterial({color:"red", wireframe:true})
+const mesh = new THREE.Mesh(geometry, material)
+mesh.add(new THREE.AxesHelper(5))
+scene.add(mesh)
 
 // intialize a camera
 const camera = new THREE.PerspectiveCamera(75,aspRatio, 0.1, 30)
