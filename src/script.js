@@ -1,142 +1,145 @@
-import * as THREE from 'three';
-import {OrbitControls} from 'three/addons/controls/OrbitControls.js'
-import {Pane} from 'tweakpane'
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { Pane } from "tweakpane";
 
 // Variables
-const aspRatio = window.innerWidth/window.innerHeight
+const aspRatio = window.innerWidth / window.innerHeight;
 const pane = new Pane();
 
 // intialize a scene
 const scene = new THREE.Scene();
 
 // create a mesh(object)
-const cubeGeometry = new THREE.BoxGeometry(1,1,1);
-const planeGeometry = new THREE.PlaneGeometry(1,1)
-const torusKnotGeometry = new THREE.TorusKnotGeometry()
+const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+const planeGeometry = new THREE.PlaneGeometry(1, 1);
+const torusKnotGeometry = new THREE.TorusKnotGeometry();
+const sphereGeometry = new THREE.SphereGeometry(0.5, 52, 52);
+const cylinderGeometry = new THREE.CylinderGeometry(0.5, 0.5, 1);
 
-// =============================== Material ===============================
+// TextureLoader
+const loader = new THREE.TextureLoader();
 
-const material = new THREE.MeshBasicMaterial()
+// ====================================== Load Texture ======================================
 
-// * MeshBasic Material
+const texture = loader.load('/texture/whispy-grass-meadow-bl/wispy-grass-meadow_albedo.png')
+const textureAo = loader.load('/texture/whispy-grass-meadow-bl/wispy-grass-meadow_ao.png')
+const textureHeight = loader.load('/texture/whispy-grass-meadow-bl/wispy-grass-meadow_height.png')
+const textureMetallic = loader.load('/texture/whispy-grass-meadow-bl/wispy-grass-meadow_metallic.png')
+const textureRoughness = loader.load('/texture/whispy-grass-meadow-bl/wispy-grass-meadow_roughness.png')
+const textureNormal = loader.load('/texture/whispy-grass-meadow-bl/wispy-grass-meadow_normal.png')
 
-// Set color
-// material.color = new THREE.Color('limegreen');
-// material.color = new THREE.Color(0x0000ff);
-
-// change opacity
-// material.transparent = true
-// material.opacity = 0.5
-
-// DoubleSided
 /**
- * When using Plane Geometry you can only see plane from front side and you will see blank from behind
- * to avoid that we use THREE.DoubleSide to render both side
+ * If wer are mapping texture on a 10x10 plane, the texture will be stretched 
+ * Sol - repeat textures of 1x1 over 10x10  
+ * wrapS - repeats horizontally (X-Axis)
+ * wrapT - repeats vertically (Y-Axis)
+ * ps: use space-ship-monitor-bl texture for repeat method
  */
-material.side = THREE.DoubleSide 
-// material.side = THREE.FrontSide //Will only render front side of plane 
-// material.side = THREE.BackSide //Will only render back side of plane 
 
-// * MeshLambert Material
-// for Lambert Material Light is necessary
-const lambMaterial = new THREE.MeshLambertMaterial()
+// texture.repeat.set(10,10)
 
-// * MeshPhong Material
-const phongMaterial = new THREE.MeshPhongMaterial()
-phongMaterial.shininess = 90
+// for repearWrapping tile will be repeated from start 
+// 0-100,0-100,0-100.....
+// texture.wrapS = THREE.RepeatWrapping
+// texture.wrapT = THREE.RepeatWrapping
 
-// pane.addBinding(phongMaterial, 'shininess',{
-//     min:1, max : 1000, step:1
+// for MirroredRepeatWrapping tile will be mirrored and then repeated 
+// 0-100,100-0,0-100.....
+// texture.wrapS = THREE.MirroredRepeatWrapping
+// texture.wrapT = THREE.MirroredRepeatWrapping
+
+
+// pane.addBinding(texture, 'offset', {
+//     x:{
+//         min:-1,max:1,step:0.001
+//     },
+//     y:{
+//         min:-1,max:1,step:0.001
+//     }
 // })
 
-// * MeshStandard Material
-const standardMaterial = new THREE.MeshStandardMaterial()
+// Material
 
-// pane.addBinding(standardMaterial, 'metalness',{
-//     min:0, max : 1, step:0.01
-// })
+const material = new THREE.MeshStandardMaterial();
+// material.side = THREE.DoubleSide
+material.map = texture
+material.aoMap = textureAo
+material.roughnessMap = textureRoughness
+material.roughness = 1
+material.metalnessMap = textureMetallic
+material.normalMap = textureNormal
 
-// pane.addBinding(standardMaterial, 'roughness',{
-//     min:0, max : 1, step:0.01
-// })
+const cubeMesh = new THREE.Mesh(cubeGeometry, material);
+cubeMesh.position.y = -2;
 
-// * MeshPhysical Material
-const physicalMaterial = new THREE.MeshPhysicalMaterial()
-physicalMaterial.color = new THREE.Color(0x049ef4)
-physicalMaterial.emissive = new THREE.Color(0x000)
+const planeMesh = new THREE.Mesh(planeGeometry, material);
+planeMesh.position.x = -2;
+// planeMesh.rotation.x = THREE.MathUtils.degToRad(90)
+// planeMesh.scale.setScalar(10)
 
-pane.addBinding(physicalMaterial, 'roughness',{
-    min:0, max : 1, step:0.01
-})
+const torusKnotMesh = new THREE.Mesh(torusKnotGeometry, material);
+torusKnotMesh.position.x = 2;
+torusKnotMesh.scale.setScalar(0.4);
 
-pane.addBinding(physicalMaterial, 'clearcoat',{
-    min:0, max : 1, step:0.01
-})
+const sphereMesh = new THREE.Mesh(sphereGeometry, material);
 
 
-// //Create fog like env (needs background) 
-// const fog = new THREE.Fog('white', 1, 10)
-// scene.fog = fog
+const cylinderMesh = new THREE.Mesh(cylinderGeometry, material);
+cylinderMesh.position.y = 2;
 
-// // Add background color
-// scene.background = new THREE.Color('white')
+// scene.add(cubeMesh);
+scene.add(planeMesh);
+// scene.add(torusKnotMesh);
+// scene.add(sphereMesh);
+// scene.add(cylinderMesh);
 
-const cubeMesh = new THREE.Mesh(cubeGeometry, material)
-
-// const torusKnotMesh = new THREE.Mesh(torusKnotGeometry, lambMaterial)
-// const torusKnotMesh = new THREE.Mesh(torusKnotGeometry, phongMaterial)
-// const torusKnotMesh = new THREE.Mesh(torusKnotGeometry, standardMaterial)
-const torusKnotMesh = new THREE.Mesh(torusKnotGeometry, physicalMaterial)
-torusKnotMesh.position.x = 2
-torusKnotMesh.scale.setScalar(0.5)
-
-const plane = new THREE.Mesh(planeGeometry, material)
-plane.position.x = -2
-
-scene.add(cubeMesh)
-scene.add(plane)
-scene.add(torusKnotMesh)
+const rotate = new THREE.Group();
+rotate.add(cubeMesh, planeMesh, torusKnotMesh, sphereMesh, cylinderMesh);
+// rotate.add( planeMesh);
+scene.add(rotate)
 
 // Light
-const ambientLight = new THREE.AmbientLight(0x000, 0.3)
-scene.add(ambientLight)
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+scene.add(ambientLight);
 
-const pointLight = new THREE.PointLight(0xffffff, 3)
-pointLight.position.set(1,1,2)
-scene.add(pointLight)
+const pointLight = new THREE.PointLight(0xffffff, 10);
+pointLight.position.set(0, 0, 3);
 
-const lightHelper = new THREE.PointLightHelper(pointLight, 1)
-// scene.add(lightHelper)
-
+// scene.add(pointLight);
+// scene.background = new THREE.Color('white')
 
 // intialize a camera
-const camera = new THREE.PerspectiveCamera(75,aspRatio, 0.1, 30)
-camera.position.z = 5
+const camera = new THREE.PerspectiveCamera(75, aspRatio, 0.1, 30);
+camera.position.z = 5;
+camera.position.y = 2;
 
 // intialize a renederer
-const canvas = document.querySelector('canvas.threejs')
-const renderer = new THREE.WebGLRenderer({canvas, antialias:true}) // antialias help to reduce staircase effect
-renderer.setSize(window.innerWidth, window.innerHeight )
+const canvas = document.querySelector("canvas.threejs");
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true }); // antialias help to reduce staircase effect
+renderer.setSize(window.innerWidth, window.innerHeight);
 
 // create controls
-const controls = new OrbitControls(camera, canvas)
-controls.enableDamping = true
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
 // controls.autoRotate = true
 
 // resize according to window
-window.addEventListener('resize', ()=>{
-    let newAspRatio = window.innerWidth/window.innerHeight;
-    camera.aspect = newAspRatio;
-    camera.updateProjectionMatrix(); // need to call this everytime if camera property is changed
-    renderer.setSize(window.innerWidth, window.innerHeight )
-})
+window.addEventListener("resize", () => {
+  let newAspRatio = window.innerWidth / window.innerHeight;
+  camera.aspect = newAspRatio;
+  camera.updateProjectionMatrix(); // need to call this everytime if camera property is changed
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
 
-const renderloop= ()=>{
+const renderloop = () => {
 
-    controls.update() //necessary for enableDamping & autoRotate
+//   rotate.children.forEach(mesh => {
+//     if(mesh instanceof THREE.Mesh) mesh.rotation.y += 0.02
+//   });
+  controls.update(); //necessary for enableDamping & autoRotate
 
-    renderer.render(scene, camera)
-    window.requestAnimationFrame(renderloop)
-}
+  renderer.render(scene, camera);
+  window.requestAnimationFrame(renderloop);
+};
 
-renderloop()
+renderloop();
