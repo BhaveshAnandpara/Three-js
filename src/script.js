@@ -10,42 +10,44 @@ const pane = new Pane();
 const scene = new THREE.Scene();
 
 // create a mesh(object)
-const sphereGeometry = new THREE.SphereGeometry(0.5, 52, 52);
+const sphereGeometry = new THREE.SphereGeometry(0.5, 64, 64);
 
 // TextureLoader
 const loader = new THREE.TextureLoader();
 
 // ====================================== Load Texture ======================================
 
-const texture = loader.load('/texture/whispy-grass-meadow-bl/wispy-grass-meadow_albedo.png')
-const textureAo = loader.load('/texture/whispy-grass-meadow-bl/wispy-grass-meadow_ao.png')
-const textureHeight = loader.load('/texture/whispy-grass-meadow-bl/wispy-grass-meadow_height.png')
-const textureMetallic = loader.load('/texture/whispy-grass-meadow-bl/wispy-grass-meadow_metallic.png')
-const textureRoughness = loader.load('/texture/whispy-grass-meadow-bl/wispy-grass-meadow_roughness.png')
-const textureNormal = loader.load('/texture/whispy-grass-meadow-bl/wispy-grass-meadow_normal.png')
-
+const texture = loader.load('/texture/ocean-rock-bl/ocean-rock_albedo.png')
+const textureAo = loader.load('/texture/ocean-rock-bl/ocean-rock_ao.png')
+const textureHeight = loader.load('/texture/ocean-rock-bl/ocean-rock_height.png')
+const textureMetallic = loader.load('/texture/ocean-rock-bl/ocean-rock_metallic.png')
+const textureRoughness = loader.load('/texture/ocean-rock-bl/ocean-rock_roughness.png')
+const textureNormal = loader.load('/texture/ocean-rock-bl/ocean-rock_normal-ogl.png')
 
 // Material
 const material = new THREE.MeshStandardMaterial();
 material.map = texture
 material.aoMap = textureAo
+material.aoMapIntensity = 1
 material.roughnessMap = textureRoughness
 material.roughness = 1
 material.normalMap = textureNormal
+material.displacementMap = textureHeight
+material.displacementScale = 0.1
+
+console.log(material)
 
 
 const sphereMesh = new THREE.Mesh(sphereGeometry, material);
-
-
 scene.add(sphereMesh);
 
 
 // Light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
 scene.add(ambientLight);
 
 const pointLight = new THREE.PointLight(0xffffff,  1);
-pointLight.position.set(-1,-1,-1);
+pointLight.position.set(1,1,1);
 
 pane.addBinding(pointLight, 'position', {
     x:{min:-10,max:10,step:0.1},
@@ -54,8 +56,6 @@ pane.addBinding(pointLight, 'position', {
 })
 
 scene.add(pointLight);
-scene.add( new THREE.PointLightHelper( pointLight, 1 ))
-scene.add( new THREE.AxesHelper())
 
 // intialize a camera
 const camera = new THREE.PerspectiveCamera(75, aspRatio, 0.1, 30);
