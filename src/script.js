@@ -10,103 +10,83 @@ const pane = new Pane();
 const scene = new THREE.Scene();
 
 // create a mesh(object)
-const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-const planeGeometry = new THREE.PlaneGeometry(1, 1);
-const torusKnotGeometry = new THREE.TorusKnotGeometry();
-const sphereGeometry = new THREE.SphereGeometry(0.5, 52, 52);
-const cylinderGeometry = new THREE.CylinderGeometry(0.5, 0.5, 1);
+const sphereGeometry = new THREE.SphereGeometry(0.5, 64, 64);
+
+
 
 // TextureLoader
 const loader = new THREE.TextureLoader();
+const cubeTextureLoader = new THREE.CubeTextureLoader()
 
-// ====================================== Load Texture ======================================
-
-const texture = loader.load('/texture/whispy-grass-meadow-bl/wispy-grass-meadow_albedo.png')
-const textureAo = loader.load('/texture/whispy-grass-meadow-bl/wispy-grass-meadow_ao.png')
-const textureHeight = loader.load('/texture/whispy-grass-meadow-bl/wispy-grass-meadow_height.png')
-const textureMetallic = loader.load('/texture/whispy-grass-meadow-bl/wispy-grass-meadow_metallic.png')
-const textureRoughness = loader.load('/texture/whispy-grass-meadow-bl/wispy-grass-meadow_roughness.png')
-const textureNormal = loader.load('/texture/whispy-grass-meadow-bl/wispy-grass-meadow_normal.png')
-
-/**
- * If wer are mapping texture on a 10x10 plane, the texture will be stretched 
- * Sol - repeat textures of 1x1 over 10x10  
- * wrapS - repeats horizontally (X-Axis)
- * wrapT - repeats vertically (Y-Axis)
- * ps: use space-ship-monitor-bl texture for repeat method
- */
-
-// texture.repeat.set(10,10)
-
-// for repearWrapping tile will be repeated from start 
-// 0-100,0-100,0-100.....
-// texture.wrapS = THREE.RepeatWrapping
-// texture.wrapT = THREE.RepeatWrapping
-
-// for MirroredRepeatWrapping tile will be mirrored and then repeated 
-// 0-100,100-0,0-100.....
-// texture.wrapS = THREE.MirroredRepeatWrapping
-// texture.wrapT = THREE.MirroredRepeatWrapping
+// ====================================== Load Texture for Standard Material ======================================
 
 
-// pane.addBinding(texture, 'offset', {
-//     x:{
-//         min:-1,max:1,step:0.001
-//     },
-//     y:{
-//         min:-1,max:1,step:0.001
-//     }
-// })
+const texture = loader.load('/texture/used-stainless-steel2-bl/used-stainless-steel2_albedo.png')
+const textureAo = loader.load('/texture/used-stainless-steel2-bl/used-stainless-steel2_ao.png')
+const textureHeight = loader.load('/texture/used-stainless-steel2-bl/used-stainless-steel2_height.png')
+const textureMetallic = loader.load('/texture/used-stainless-steel2-bl/used-stainless-steel2_metallic.png')
+const textureRoughness = loader.load('/texture/used-stainless-steel2-bl/used-stainless-steel2_roughness.png')
+const textureNormal = loader.load('/texture/used-stainless-steel2-bl/used-stainless-steel2_normal-ogl.png')
 
-// Material
+const enviromentMapTexture = cubeTextureLoader.load(
+    [
+        '/environmentMaps/3/px.jpg',
+        '/environmentMaps/3/nx.jpg',
+        '/environmentMaps/3/py.jpg',
+        '/environmentMaps/3/ny.jpg',
+        '/environmentMaps/3/pz.jpg',
+        '/environmentMaps/3/nz.jpg',
+    ]
+)
+
 
 const material = new THREE.MeshStandardMaterial();
 // material.side = THREE.DoubleSide
 material.map = texture
 material.aoMap = textureAo
+
 material.roughnessMap = textureRoughness
 material.roughness = 1
+
 material.metalnessMap = textureMetallic
 material.normalMap = textureNormal
 
-const cubeMesh = new THREE.Mesh(cubeGeometry, material);
-cubeMesh.position.y = -2;
+material.displacementMap = textureHeight
 
-const planeMesh = new THREE.Mesh(planeGeometry, material);
-planeMesh.position.x = -2;
-// planeMesh.rotation.x = THREE.MathUtils.degToRad(90)
-// planeMesh.scale.setScalar(10)
+material.envMap = enviromentMapTexture
 
-const torusKnotMesh = new THREE.Mesh(torusKnotGeometry, material);
-torusKnotMesh.position.x = 2;
-torusKnotMesh.scale.setScalar(0.4);
+// ====================================== Load Texture for MeshMatcapMaterial ======================================
 
-const sphereMesh = new THREE.Mesh(sphereGeometry, material);
+/*
+const material = new THREE.MeshMatcapMaterial();
+
+const matcapTexture = loader.load('/matcaps/3.png')
+material.matcap = matcapTexture
+*/
+
+// ====================================== Load Texture for MeshToonMaterial ======================================
+
+/*
+const material = new THREE.MeshToonMaterial()
+
+const gradientTexture = loader.load('/gradients/5.jpg')
+material.gradientMap = gradientTexture
+*/
 
 
-const cylinderMesh = new THREE.Mesh(cylinderGeometry, material);
-cylinderMesh.position.y = 2;
-
-// scene.add(cubeMesh);
-scene.add(planeMesh);
-// scene.add(torusKnotMesh);
-// scene.add(sphereMesh);
-// scene.add(cylinderMesh);
-
-const rotate = new THREE.Group();
-rotate.add(cubeMesh, planeMesh, torusKnotMesh, sphereMesh, cylinderMesh);
-// rotate.add( planeMesh);
-scene.add(rotate)
+const cubeMesh = new THREE.Mesh(sphereGeometry, material);
+scene.add(cubeMesh);
 
 // Light
-const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+
+const pointLight = new THREE.PointLight(0xffffff, 2);
+pointLight.position.set(2, 2, 3);
+
 scene.add(ambientLight);
+// scene.add(new THREE.PointLightHelper(pointLight));
 
-const pointLight = new THREE.PointLight(0xffffff, 10);
-pointLight.position.set(0, 0, 3);
 
-// scene.add(pointLight);
-// scene.background = new THREE.Color('white')
 
 // intialize a camera
 const camera = new THREE.PerspectiveCamera(75, aspRatio, 0.1, 30);
