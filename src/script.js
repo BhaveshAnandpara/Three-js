@@ -9,7 +9,7 @@ const scene = new THREE.Scene();
 
 // Texture Loaders
 const loader = new THREE.TextureLoader()
-const partical = loader.load('/textures/particles/2.png')
+const partical = loader.load('/textures/particles/13.png')
 
 // ====================================== Sphere particals Geometry ======================================
 const particalGeometry = new THREE.SphereGeometry( 1, 16, 16)
@@ -55,7 +55,7 @@ const particleCustomMaterial = new THREE.PointsMaterial({
     depthTest : false, //Basically says donot render which is forward and which is behind solves issue but not good when there is an object
     depthWrite : false, //THis solves all our Issues
     blending : THREE.AdditiveBlending, //Glows if there is particle over another ,
-    vertexColors : true //Whithout it wont change colors
+    // vertexColors : true //Whithout it wont change colors
 })  
 
 const particles = new THREE.Points(particalCustomGeometry, particleCustomMaterial)
@@ -97,7 +97,7 @@ const renderloop= ()=>{
         const n = i * 3 //So that it can access direct x position of every particle -- xyz xyz xyz so that it can jump every 3 elements
 
         const x = particalCustomGeometry.attributes.position.array[n]
-        particalCustomGeometry.attributes.position.array[n + 1] = Math.tan(elapsedTime + x) //n + 1 will access y 
+        particalCustomGeometry.attributes.position.array[n + 1] = Math.sin(elapsedTime + x) //n + 1 will access y 
 
     }
 
